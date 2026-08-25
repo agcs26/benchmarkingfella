@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Card Generator</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #666;
+      --line: #333;
+      --line-light: #ccc;
+      --bg: #fafafa;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Consolas, 'Courier New', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: minmax(320px, 460px) 1fr;
+      gap: 32px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    @media (max-width:900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    h1 {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin: 0 0 20px;
+      line-height: 1.5;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line-light);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 18px;
+    }
+
+    legend {
+      font-family: var(--font-sans);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      padding: 0 0 8px;
+      border-bottom: 1px solid var(--line-light);
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px 9px;
+      border: 1px solid var(--line-light);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 0.86rem;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      font-family: var(--font-sans);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #999;
+      outline-offset: 1px;
+    }
+
+    .cat-block {
+      border: 1px solid var(--line-light);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+
+    .cat-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin: 2px 0 12px;
+      line-height: 1.4;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .check-row input {
+      width: auto;
+    }
+
+    .check-row label {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--ink);
+    }
+
+    details {
+      border: 1px solid var(--line-light);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+    }
+
+    summary {
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    details .row3 {
+      margin-top: 10px;
+    }
+
+    .btnrow {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 11px 18px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #1a1a1a;
+      color: #fff;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #1a1a1a;
+      border: 1px solid #1a1a1a;
+    }
+
+    .btn-secondary:hover {
+      background: #f0f0f0;
+    }
+
+    .preview-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .preview-toolbar {
+      width: 100%;
+      max-width: 380px;
+      margin-bottom: 14px;
+    }
+
+    .preview-toolbar span {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ---- the printed card: black & white only, no background fill ---- */
+    .card {
+      width: 5in;
+      height: 7in;
+      background: #fff;
+      color: #111;
+      border-radius: 0;
+      position: relative;
+      padding: 0.32in 0.34in;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-sans);
+    }
+
+    .corner {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+    }
+
+    .corner.tl {
+      top: 0.22in;
+      left: 0.22in;
+      border-top: 2px solid #000;
+      border-left: 2px solid #000;
+    }
+
+    .corner.tr {
+      top: 0.22in;
+      right: 0.22in;
+      border-top: 2px solid #000;
+      border-right: 2px solid #000;
+    }
+
+    .corner.bl {
+      bottom: 0.22in;
+      left: 0.22in;
+      border-bottom: 2px solid #000;
+      border-left: 2px solid #000;
+    }
+
+    .corner.br {
+      bottom: 0.22in;
+      right: 0.22in;
+      border-bottom: 2px solid #000;
+      border-right: 2px solid #000;
+    }
+
+    .header-normal {
+      text-align: center;
+      padding-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .device-name {
+      font-weight: 700;
+      font-size: 19px;
+      color: #000;
+      line-height: 1.15;
+    }
+
+    .device-tagline {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: #444;
+      margin-top: 3px;
+    }
+
+    .header-big {
+      text-align: center;
+      padding: 0.35in 0 0.3in;
+      margin-bottom: 6px;
+    }
+
+    .header-big .title {
+      font-weight: 800;
+      font-size: 30px;
+      letter-spacing: 0.02em;
+      color: #000;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #000;
+      margin: 8px 0 12px;
+    }
+
+    .total-row {
+      border: 1px solid #000;
+      padding: 8px 10px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .total-label {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .total-score {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 22px;
+      color: #000;
+    }
+
+    .total-note {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      color: #333;
+      margin-top: 3px;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #outGaming {
+      margin-top: 14px;
+    }
+
+    .res-row {}
+
+    .res-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 2px;
+    }
+
+    .res-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .res-sub {
+      font-weight: 400;
+      color: #555;
+      font-size: 9px;
+    }
+
+    .res-score {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .res-desc {
+      font-size: 8.5px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar10 {
+      flex: 1;
+      display: flex;
+      gap: 2px;
+    }
+
+    .bseg {
+      flex: 1;
+      height: 11px;
+      border: 1px solid #000;
+      background: #fff;
+      cursor: pointer;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .bseg.filled {
+      background: #000;
+    }
+
+    .grade-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: #000;
+      width: 34px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .reset-link {
+      font-size: 7.5px;
+      color: #666;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 3px;
+    }
+
+    .notes-block {
+      border-top: 1px dashed #000;
+      margin-top: 12px;
+      padding-top: 8px;
+    }
+
+    .notes-label {
+      font-size: 8.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .notes-text {
+      font-size: 9px;
+      color: #111;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 7px;
+      color: #333;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed #000;
+      letter-spacing: 0.02em;
+    }
+
+    .footer-ids {
+      margin-top: 2px;
+    }
+
+    @media print {
+      @page {
+        size: 5in 7in;
+        margin: 0;
+      }
+
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+
+      .app {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+      }
+
+      .panel,
+      .preview-toolbar {
+        display: none !important;
+      }
+
+      .preview-col {
+        display: block !important;
+        align-items: initial !important;
+      }
+
+      #cardWrap {
+        transform: none !important;
+        margin: 0 !important;
+      }
+
+      .card {
+        box-shadow: none !important;
+        margin: 0 !important;
+      }
+
+      .reset-link {
+        display: none !important;
+      }
+
+      .bseg {
+        cursor: default;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <div class="panel">
+      <h1>Performance Card Generator</h1>
+      <p class="subtitle">Type in the scores off the PCMark / 3DMark result screens. Essentials, Productivity and
+        Digital Content Creation are graded X/10 against PCMark's own published "good score" references — meeting that
+        reference scores 5/10, doubling it scores 10/10. Click a bar in the preview (or use Advanced options) to
+        override any grade by hand.</p>
+
+      <fieldset>
+        <legend>Device</legend>
+        <div class="check-row">
+          <input type="checkbox" id="includeSpecs">
+          <label for="includeSpecs">Include model name and specs?</label>
+        </div>
+        <p class="hint">Leave unchecked for the back of your existing price card (front already shows the model). Check
+          it if this sheet will stand alone somewhere else.</p>
+        <div id="specsFields" style="display:none;">
+          <div class="row full">
+            <div><label>Device name / model</label><input class="autoField" id="deviceName"
+                placeholder="e.g. HP Pavilion x360 15.6&quot;"></div>
+          </div>
+          <div class="row3">
+            <div><label>CPU</label><input class="autoField" id="cpuModel" placeholder="Intel Pentium N5030"></div>
+            <div><label>RAM</label><input class="autoField" id="ram" placeholder="8GB"></div>
+            <div><label>Storage</label><input class="autoField" id="storage" placeholder="256GB SSD"></div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>PCMark 10 — scores</legend>
+
+        <div class="cat-block">
+          <div class="cat-title">Total Score</div>
+          <div class="row">
+            <div><label>Score</label><input class="autoField" id="totalScore" type="number" placeholder="e.g. 5200">
+            </div>
+            <div><label>Note below (optional)</label><input class="autoField" id="totalNote"
+                placeholder="see example below"></div>
+          </div>
+          <div class="subtitle">Note example: "Better than 46% of all results (PCMark comparison)"</div>
+        </div>
+
+        <div class="cat-block">
+          <div class="cat-title">Essentials</div>
+          <div><label>Score</label><input class="autoField" id="essScore" type="number" placeholder="e.g. 8200"></div>
+        </div>
+
+        <div class="cat-block">
+          <div class="cat-title">Productivity</div>
+          <div><label>Score</label><input class="autoField" id="prodScore" type="number" placeholder="e.g. 7100"></div>
+        </div>
+
+        <div class="cat-block">
+          <div class="cat-title">Digital Content Creation</div>
+          <div><label>Score</label><input class="autoField" id="dccScore" type="number" placeholder="e.g. 5400"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Gaming — 3DMark</legend>
+        <div class="row">
+          <div>
+            <label>Test used</label>
+            <select class="autoField" id="gameTest">
+              <option>—</option>
+              <option>3DMark Steel Nomad</option>
+              <option>3DMark Steel Nomad Light</option>
+              <option>3DMark Solar Bay Extreme</option>
+              <option>3DMark Solar Bay</option>
+              <option>3DMark Time Spy</option>
+              <option>3DMark Fire Strike</option>
+              <option>3DMark Night Raid</option>
+            </select>
+          </div>
+          <div><label>Score</label><input class="autoField" id="gameScore" type="number" placeholder="e.g. 3900"></div>
+        </div>
+        <p class="hint">Score only — the different 3DMark tests use unrelated scales, so a shared bar would misrepresent
+          them.</p>
+      </fieldset>
+
+      <details>
+        <summary>Advanced — manually set bar grades</summary>
+        <p class="hint">Leave blank to use the calculated grade. Enter 0–10 to override it, or just click directly on a
+          bar in the preview.</p>
+        <div class="row3">
+          <div><label>Essentials</label><input id="adv_ess" type="number" min="0" max="10" step="1" placeholder="auto">
+          </div>
+          <div><label>Productivity</label><input id="adv_prod" type="number" min="0" max="10" step="1"
+              placeholder="auto"></div>
+          <div><label>Digital Content Creation</label><input id="adv_dcc" type="number" min="0" max="10" step="1"
+              placeholder="auto"></div>
+        </div>
+      </details>
+
+      <fieldset>
+        <div class="check-row">
+          <input type="checkbox" id="includeNotes">
+          <label for="includeNotes">Include a note?</label>
+        </div>
+        <div id="notesField" style="display:none;">
+          <textarea class="autoField" id="notesText"
+            placeholder="Any explanation or detail worth adding to this sheet..."></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Reference &amp; date</legend>
+        <div class="row">
+          <div><label>Test date (yyyy-mm-dd)</label><input class="autoField" id="testDate" placeholder="yyyy-mm-dd">
+          </div>
+        </div>
+        <div class="row">
+          <div><label>PCMark result ID (optional)</label><input class="autoField" id="pcmarkId"
+              placeholder="e.g. 1539829"></div>
+          <div><label>3DMark result ID (optional)</label><input class="autoField" id="dmarkId"
+              placeholder="e.g. 9284710"></div>
+        </div>
+      </fieldset>
+
+      <div class="btnrow">
+        <button class="btn-primary" id="printBtn">Print / Save as PDF</button>
+        <button class="btn-secondary" id="resetBtn">Clear for next device</button>
+      </div>
+    </div>
+
+    <div class="preview-col">
+      <div class="preview-toolbar"><span>Live preview — actual size is 5 × 7 in</span></div>
+      <div id="cardWrap" style="transform-origin: top center;">
+        <div class="card" id="printCard">
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+
+          <div class="header-normal" id="headerNormal" style="display:none;">
+            <div class="eyebrow">Performance Profile</div>
+            <div class="device-name" id="outName">Device name</div>
+            <div class="device-tagline" id="outSpecs"></div>
+          </div>
+          <div class="header-big" id="headerBig">
+            <div class="title">Performance Profile</div>
+          </div>
+          <hr class="divider">
+
+          <div class="total-row">
+            <div class="total-label">PCMark 10 — Total Score</div>
+            <div class="total-score" id="outTotal">—</div>
+            <div class="total-note" id="outTotalNote" style="display:none;"></div>
+          </div>
+
+          <div class="results" id="outCats"></div>
+          <div id="outGaming"></div>
+
+          <div class="notes-block" id="outNotes" style="display:none;">
+            <div class="notes-label">Notes</div>
+            <div class="notes-text" id="outNotesText"></div>
+          </div>
+
+          <div class="footer-note">
+            <div id="outFooterMain"></div>
+            <div class="footer-ids" id="outFooterIds" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // UL's own published "good score" references for PCMark 10 test groups.
+    // Source: benchmarks.ul.com "What is a good PCMark 10 score?"
+    // Grade formula: meeting this reference score = 5/10, double it = 10/10.
+    const GOOD = { ess: 4100, prod: 4500, dcc: 3450 };
+
+    const CAT_META = {
+      ess: { name: 'Essentials', desc: 'Web browsing, video calls, app start-up', scoreId: 'essScore' },
+      prod: { name: 'Productivity', desc: 'Documents, spreadsheets, office work', scoreId: 'prodScore' },
+      dcc: { name: 'Digital Content Creation', desc: 'Photo editing, video editing, rendering', scoreId: 'dccScore' },
+    };
+
+    let overrides = { ess: null, prod: null, dcc: null };
+
+    function el(id) { return document.getElementById(id); }
+    function val(id) { const v = el(id).value; return v === '' ? null : v; }
+    function num(id) { const v = val(id); return v === null ? null : Number(v); }
+    function checked(id) { return el(id).checked; }
+
+    function calcGrade(score, good) {
+      if (score === null || isNaN(score)) return null;
+      const g = (score / good) * 5;
+      return Math.round(Math.min(10, Math.max(0, g)));
+    }
+    function getGrade(key, score) {
+      return overrides[key] !== null ? overrides[key] : calcGrade(score, GOOD[key]);
+    }
+    function barHtml(key, grade) {
+      let s = '';
+      for (let i = 1; i <= 10; i++) {
+        const filled = grade !== null && i <= grade;
+        s += `<div class="bseg ${filled ? 'filled' : ''}" data-key="${key}" data-idx="${i}"></div>`;
+      }
+      return s;
+    }
+
+    function render() {
+      const includeSpecs = checked('includeSpecs');
+      el('specsFields').style.display = includeSpecs ? '' : 'none';
+      el('headerNormal').style.display = includeSpecs ? '' : 'none';
+      el('headerBig').style.display = includeSpecs ? 'none' : '';
+      if (includeSpecs) {
+        el('outName').textContent = val('deviceName') || 'Device name';
+        const specBits = [val('cpuModel'), val('ram'), val('storage')].filter(Boolean);
+        el('outSpecs').textContent = specBits.join(' · ');
+      }
+
+      const total = num('totalScore');
+      const totalNote = val('totalNote');
+      el('outTotal').textContent = total !== null ? total.toLocaleString() : '—';
+      el('outTotalNote').style.display = totalNote ? '' : 'none';
+      el('outTotalNote').textContent = totalNote ? totalNote : '';
+
+      let catsHtml = '';
+      ['ess', 'prod', 'dcc'].forEach(key => {
+        const meta = CAT_META[key];
+        const score = num(meta.scoreId);
+        const grade = getGrade(key, score);
+        const overridden = overrides[key] !== null;
+        catsHtml += `
+      <div class="res-row">
+        <div class="res-top">
+          <div class="res-name">${meta.name}</div>
+          <div class="res-score">${score !== null ? score.toLocaleString() : '—'}</div>
+        </div>
+        <div class="res-desc">${meta.desc}</div>
+        <div class="bar-row">
+          <div class="bar10">${barHtml(key, grade)}</div>
+          <div class="grade-label">${grade !== null ? grade + '/10' : '—/10'}</div>
+        </div>
+        ${overridden ? `<div class="reset-link" data-reset="${key}">manually set — click to reset to calculated</div>` : ''}
+      </div>`;
+      });
+      el('outCats').innerHTML = catsHtml;
+
+      const gScore = num('gameScore');
+      const gTest = val('gameTest') || '3DMark';
+      el('outGaming').innerHTML = `
+    <div class="res-row">
+      <div class="res-top">
+        <div class="res-name">Gaming <span class="res-sub">(${gTest})</span></div>
+        <div class="res-score">${gScore !== null ? gScore.toLocaleString() : '—'}</div>
+      </div>
+      <div class="res-desc">Real-time graphics &amp; game performance</div>
+    </div>`;
+
+      const includeNotes = checked('includeNotes');
+      el('notesField').style.display = includeNotes ? '' : 'none';
+      const notesText = val('notesText');
+      const showNotes = includeNotes && notesText;
+      el('outNotes').style.display = showNotes ? '' : 'none';
+      if (showNotes) el('outNotesText').textContent = notesText;
+
+      const dateStr = val('testDate') || '';
+      el('outFooterMain').textContent = `Benchmarked with PCMark and 3DMark${dateStr ? ' — ' + dateStr : ''} · Figures for comparing devices in our stock`;
+      const pcmarkId = val('pcmarkId'), dmarkId = val('dmarkId');
+      let idBits = [];
+      if (pcmarkId) idBits.push('PCMark ID: ' + pcmarkId);
+      if (dmarkId) idBits.push('3DMark ID: ' + dmarkId);
+      el('outFooterIds').style.display = idBits.length ? '' : 'none';
+      el('outFooterIds').textContent = idBits.join(' · ');
+
+      ['ess', 'prod', 'dcc'].forEach(key => {
+        el('adv_' + key).value = overrides[key] !== null ? overrides[key] : '';
+      });
+    }
+
+    document.querySelectorAll('.autoField').forEach(i => i.addEventListener('input', render));
+    document.getElementById('includeSpecs').addEventListener('input', render);
+    document.getElementById('includeNotes').addEventListener('input', render);
+
+    ['ess', 'prod', 'dcc'].forEach(key => {
+      el('adv_' + key).addEventListener('input', () => {
+        const v = el('adv_' + key).value;
+        overrides[key] = v === '' ? null : Math.max(0, Math.min(10, Number(v)));
+        render();
+      });
+    });
+
+    // click-to-set bars + reset links (delegated, since the bars are re-rendered each time)
+    el('printCard').addEventListener('click', (e) => {
+      const seg = e.target.closest('.bseg');
+      if (seg) { overrides[seg.dataset.key] = Number(seg.dataset.idx); render(); return; }
+      const reset = e.target.closest('.reset-link');
+      if (reset) { overrides[reset.dataset.reset] = null; render(); }
+    });
+
+    el('printBtn').addEventListener('click', () => window.print());
+    el('resetBtn').addEventListener('click', () => {
+      document.querySelectorAll('input, textarea').forEach(i => {
+        if (i.type === 'checkbox') i.checked = false; else i.value = '';
+      });
+      overrides = { ess: null, prod: null, dcc: null };
+      setToday();
+      render();
+    });
+
+    function setToday() {
+      const d = new Date();
+      const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      el('testDate').value = iso;
+    }
+
+    function scalePreview() {
+      const wrap = el('cardWrap');
+      const available = Math.min(window.innerWidth * (window.innerWidth < 900 ? 0.85 : 0.4), 480);
+      const scale = Math.min(1, available / 480);
+      wrap.style.transform = `scale(${scale})`;
+      wrap.style.marginBottom = (7 * 96 * scale - 7 * 96) + 'px';
+    }
+    window.addEventListener('resize', scalePreview);
+
+    setToday();
+    scalePreview();
+    render();
+  </script>
+</body>
+
+</html>

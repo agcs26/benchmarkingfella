@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Benchmarking Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #555;
+        }
+        .option-intro {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .option {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        ol {
+            padding-left: 20px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        ul {
+            margin: 10px 0 10px 20px;
+        }
+        .benchmark-list {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>How to Benchmark Devices</h1>
+
+    <div class="option-intro">
+        <h2>Choose Your Option</h2>
+        <p><strong>Option 1:</strong> For regular laptops or PCs that won't handle games or resource-demanding software. Also use this if end users are unlikely to run such software.</p>
+        <p><strong>Option 2:</strong> For powerful devices capable of running demanding applications and games.</p>
+    </div>
+
+    <div class="option">
+        <h2>Option 1: Basic Benchmarking</h2>
+        <ol>
+            <li>Copy PCMark 10 folder to the device.</li>
+            <li>Install PCMark.</li>
+            <li>Launch it and click RUN to run a basic benchmark. It will take some time.</li>
+            <li>After the benchmark is done, go to the <strong>Final steps</strong> section.</li>
+        </ol>
+    </div>
+
+    <div class="option">
+        <h2>Option 2: Comprehensive Benchmarking</h2>
+        <ol>
+            <li>Copy PCMark 10 folder and 3DMark archive to the device.</li>
+            <li>Install PCMark.</li>
+            <li>Unzip and install 3DMark.</li>
+            <li>Launch PCMark and click RUN to run a basic benchmark. It will take some time. Wait until it finishes.</li>
+            <li>Launch 3DMark and run the RECOMMENDED benchmark for this device. Here is what each available benchmark in this version means:
+                <div class="benchmark-list">
+                    <ul>
+                        <li><strong>Steel Nomad</strong> - heavy rasterized benchmark for current hardware (gaming PCs)</li>
+                        <li><strong>Steel Nomad Light</strong> - light rasterized gaming, lightweght PCs</li>
+                        <li><strong>Solar Bay Extreme</strong> - ray-traced gaming for lightweight systems and laptops with integrated graphics</li>
+                        <li><strong>Solar Bay</strong> - light ray-traced gaming</li>
+                        <li><strong>Time Spy</strong> - for gaming PCs with DirectX 12 support</li>
+                        <li><strong>Fire Strike</strong> - for older or mid-range gaming PCs using DirectX 11</li>
+                        <li><strong>Night Raid</strong> - for laptops, tablets, and integrated graphics</li>
+                    </ul>
+                </div>
+            </li>
+            <li>After the benchmark is done, go to the <strong>Final steps</strong> section.</li>
+        </ol>
+    </div>
+
+    <div class="option">
+        <h2>Final Steps</h2>
+        <ol>
+            <li>Open benchmark-card-template file and fill in the results you got from the benchmarks you ran.</li>
+            <li>Click "Print / Save as PDF" button, select the proper printer and make sure the 5x7" paper is selected in the printing settings.</li>
+            <li>Print the Performance card on the back of your device's price card.</li>
+            <li>Delete all the installed software and installation files from the device.</li>
+        </ol>
+    </div>
+
+</body>
+</html>
