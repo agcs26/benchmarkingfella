@@ -227,6 +227,32 @@
       background: #f0f0f0;
     }
 
+    .gaming-entry {
+      border: 1px solid var(--line-light);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .gaming-entry .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #fff;
+      border: 1px solid var(--line-light);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .gaming-entry .remove-btn:hover {
+      background: #f0f0f0;
+      color: #000;
+    }
+
     .preview-col {
       display: flex;
       flex-direction: column;
@@ -379,8 +405,6 @@
     #outGaming {
       margin-top: 14px;
     }
-
-    .res-row {}
 
     .res-top {
       display: flex;
@@ -608,24 +632,33 @@
 
       <fieldset>
         <legend>Gaming — 3DMark</legend>
-        <div class="row">
-          <div>
-            <label>Test used</label>
-            <select class="autoField" id="gameTest">
-              <option>—</option>
-              <option>3DMark Steel Nomad</option>
-              <option>3DMark Steel Nomad Light</option>
-              <option>3DMark Solar Bay Extreme</option>
-              <option>3DMark Solar Bay</option>
-              <option>3DMark Time Spy</option>
-              <option>3DMark Fire Strike</option>
-              <option>3DMark Night Raid</option>
-            </select>
+        <div id="gamingContainer">
+          <div class="gaming-entry" data-index="0">
+            <button type="button" class="remove-btn" style="display:none;">Remove</button>
+            <div class="row">
+              <div>
+                <label>Test used</label>
+                <select class="autoField game-test" id="gameTest_0">
+                  <option>—</option>
+                  <option>3DMark Steel Nomad</option>
+                  <option>3DMark Steel Nomad Light</option>
+                  <option>3DMark Solar Bay Extreme</option>
+                  <option>3DMark Solar Bay</option>
+                  <option>3DMark Time Spy</option>
+                  <option>3DMark Fire Strike</option>
+                  <option>3DMark Night Raid</option>
+                </select>
+              </div>
+              <div><label>Score</label><input class="autoField game-score" id="gameScore_0" type="number" placeholder="e.g. 3900"></div>
+            </div>
+            <div class="row">
+              <div><label>Average FPS (optional)</label><input class="autoField game-fps" id="gameFps_0" type="number" placeholder="e.g. 45"></div>
+              <div><label>Comment (optional)</label><input class="autoField game-comment" id="gameComment_0" placeholder="e.g. at 1080p high settings"></div>
+            </div>
           </div>
-          <div><label>Score</label><input class="autoField" id="gameScore" type="number" placeholder="e.g. 3900"></div>
         </div>
-        <p class="hint">Score only — the different 3DMark tests use unrelated scales, so a shared bar would misrepresent
-          them.</p>
+        <button type="button" class="btn-secondary" id="addGameBtn" style="margin-top: 10px; width: 100%;">+ Add another gaming benchmark</button>
+        <p class="hint">Score only — the different 3DMark tests use unrelated scales, so a shared bar would misrepresent them.</p>
       </fieldset>
 
       <details>
@@ -790,16 +823,37 @@
       });
       el('outCats').innerHTML = catsHtml;
 
-      const gScore = num('gameScore');
-      const gTest = val('gameTest') || '3DMark';
-      el('outGaming').innerHTML = `
+      // Collect all gaming entries
+      const gamingEntries = [];
+      document.querySelectorAll('.gaming-entry').forEach(entry => {
+        const testSelect = entry.querySelector('.game-test');
+        const scoreInput = entry.querySelector('.game-score');
+        const fpsInput = entry.querySelector('.game-fps');
+        const commentInput = entry.querySelector('.game-comment');
+
+        const gScore = scoreInput.value === '' ? null : Number(scoreInput.value);
+        const gTest = testSelect.value || '3DMark';
+        const gFps = fpsInput.value === '' ? null : Number(fpsInput.value);
+        const gComment = commentInput.value === '' ? null : commentInput.value;
+
+        if (gScore !== null || gFps !== null) {
+          gamingEntries.push({ gScore, gTest, gFps, gComment });
+        }
+      });
+
+      let gamingHtml = '';
+      gamingEntries.forEach(entry => {
+        const { gScore, gTest, gFps, gComment } = entry;
+        gamingHtml += `
     <div class="res-row">
       <div class="res-top">
         <div class="res-name">Gaming <span class="res-sub">(${gTest})</span></div>
-        <div class="res-score">${gScore !== null ? gScore.toLocaleString() : '—'}</div>
+        <div class="res-score">${gFps !== null ? gFps + ' FPS' : (gScore !== null ? gScore.toLocaleString() : '—')}</div>
       </div>
-      <div class="res-desc">Real-time graphics &amp; game performance</div>
+      <div class="res-desc">Real-time graphics &amp; game performance${gScore !== null && gFps !== null ? ' · Score: ' + gScore.toLocaleString() : ''}${gComment ? ' · ' + gComment : ''}</div>
     </div>`;
+      });
+      el('outGaming').innerHTML = gamingHtml;
 
       const includeNotes = checked('includeNotes');
       el('notesField').style.display = includeNotes ? '' : 'none';
@@ -809,7 +863,8 @@
       if (showNotes) el('outNotesText').textContent = notesText;
 
       const dateStr = val('testDate') || '';
-      el('outFooterMain').textContent = `Benchmarked with PCMark and 3DMark${dateStr ? ' — ' + dateStr : ''} · Figures for comparing devices in our stock`;
+      const hasGamingData = gamingEntries.length > 0;
+      el('outFooterMain').textContent = `Benchmarked with PCMark${hasGamingData ? ' and 3DMark' : ''}${dateStr ? ' — ' + dateStr : ''} · Figures for comparing devices in our stock`;
       const pcmarkId = val('pcmarkId'), dmarkId = val('dmarkId');
       let idBits = [];
       if (pcmarkId) idBits.push('PCMark ID: ' + pcmarkId);
@@ -822,9 +877,77 @@
       });
     }
 
+    function addGamingEntry() {
+      const container = el('gamingContainer');
+      const index = container.querySelectorAll('.gaming-entry').length;
+      const newEntry = document.createElement('div');
+      newEntry.className = 'gaming-entry';
+      newEntry.dataset.index = index;
+      newEntry.innerHTML = `
+        <button type="button" class="remove-btn">Remove</button>
+        <div class="row">
+          <div>
+            <label>Test used</label>
+            <select class="autoField game-test" id="gameTest_${index}">
+              <option>—</option>
+              <option>3DMark Steel Nomad</option>
+              <option>3DMark Steel Nomad Light</option>
+              <option>3DMark Solar Bay Extreme</option>
+              <option>3DMark Solar Bay</option>
+              <option>3DMark Time Spy</option>
+              <option>3DMark Fire Strike</option>
+              <option>3DMark Night Raid</option>
+            </select>
+          </div>
+          <div><label>Score</label><input class="autoField game-score" id="gameScore_${index}" type="number" placeholder="e.g. 3900"></div>
+        </div>
+        <div class="row">
+          <div><label>Average FPS (optional)</label><input class="autoField game-fps" id="gameFps_${index}" type="number" placeholder="e.g. 45"></div>
+          <div><label>Comment (optional)</label><input class="autoField game-comment" id="gameComment_${index}" placeholder="e.g. at 1080p high settings"></div>
+        </div>
+      `;
+      container.appendChild(newEntry);
+
+      // Add event listeners to new fields
+      newEntry.querySelectorAll('.autoField').forEach(i => i.addEventListener('input', render));
+      newEntry.querySelector('.remove-btn').addEventListener('click', () => {
+        newEntry.remove();
+        updateRemoveButtons();
+        render();
+      });
+
+      updateRemoveButtons();
+    }
+
+    function updateRemoveButtons() {
+      const entries = document.querySelectorAll('.gaming-entry');
+      entries.forEach((entry, index) => {
+        const removeBtn = entry.querySelector('.remove-btn');
+        if (removeBtn) {
+          removeBtn.style.display = index === 0 ? 'none' : 'block';
+        }
+      });
+    }
+
+    function removeGamingEntry(button) {
+      const entry = button.closest('.gaming-entry');
+      entry.remove();
+      updateRemoveButtons();
+      render();
+    }
+
+    // Add event listeners to existing fields
     document.querySelectorAll('.autoField').forEach(i => i.addEventListener('input', render));
     document.getElementById('includeSpecs').addEventListener('input', render);
     document.getElementById('includeNotes').addEventListener('input', render);
+
+    // Add gaming entry button listener
+    el('addGameBtn').addEventListener('click', addGamingEntry);
+
+    // Add remove button listeners to existing entries
+    document.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => removeGamingEntry(btn));
+    });
 
     ['ess', 'prod', 'dcc'].forEach(key => {
       el('adv_' + key).addEventListener('input', () => {
@@ -847,6 +970,13 @@
       document.querySelectorAll('input, textarea').forEach(i => {
         if (i.type === 'checkbox') i.checked = false; else i.value = '';
       });
+      // Reset gaming entries to just one
+      const container = el('gamingContainer');
+      const entries = container.querySelectorAll('.gaming-entry');
+      for (let i = entries.length - 1; i > 0; i--) {
+        entries[i].remove();
+      }
+      updateRemoveButtons();
       overrides = { ess: null, prod: null, dcc: null };
       setToday();
       render();
