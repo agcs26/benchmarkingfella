@@ -58,6 +58,15 @@
             border-radius: 4px;
             margin: 10px 0;
         }
+        .benchmark-list h3 {
+            color: #2c3e50;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        .benchmark-list h3:first-child {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -94,16 +103,25 @@
             <li>Install PCMark.</li>
             <li>Unzip and install 3DMark.</li>
             <li>Launch PCMark and click RUN to run a basic benchmark. It will take some time. Wait until it finishes.</li>
-            <li>Launch 3DMark and run the RECOMMENDED benchmark for this device. Here is what each available benchmark in this version means:
+            <li>Launch 3DMark and run the RECOMMENDED benchmark for this device (then optionally run additional benchmarks). Here is what each available benchmark in this version means:
                 <div class="benchmark-list">
+                    <h3>🖥️ Gaming PCs (High Performance)</h3>
                     <ul>
-                        <li><strong>Steel Nomad</strong> - heavy rasterized benchmark for current hardware (gaming PCs)</li>
-                        <li><strong>Steel Nomad Light</strong> - light rasterized gaming, lightweght PCs</li>
-                        <li><strong>Solar Bay Extreme</strong> - ray-traced gaming for lightweight systems and laptops with integrated graphics</li>
-                        <li><strong>Solar Bay</strong> - light ray-traced gaming</li>
-                        <li><strong>Time Spy</strong> - for gaming PCs with DirectX 12 support</li>
-                        <li><strong>Fire Strike</strong> - for older or mid-range gaming PCs using DirectX 11</li>
-                        <li><strong>Night Raid</strong> - for laptops, tablets, and integrated graphics</li>
+                        <li><strong>Steel Nomad</strong> — 4K benchmark for powerful gaming PCs (DirectX 12)</li>
+                        <li><strong>Time Spy</strong> — 1440p gaming standard with CPU test (DirectX 12)</li>
+                        <li><strong>Fire Strike</strong> — 1080p for older/mid-range gaming PCs (DirectX 11)</li>
+                    </ul>
+
+                    <h3>💻 Laptops & Lightweight PCs</h3>
+                    <ul>
+                        <li><strong>Night Raid</strong> — 1080p for laptops with integrated graphics (DirectX 12)</li>
+                        <li><strong>Steel Nomad Light</strong> — 1440p for high-end lightweight devices (DirectX 12/Vulkan)</li>
+                    </ul>
+
+                    <h3>📱 Mobile & Ray Tracing</h3>
+                    <ul>
+                        <li><strong>Solar Bay Extreme</strong> — Most demanding ray tracing, 1440p, for devices with integrated graphics</li>
+                        <li><strong>Solar Bay</strong> — Ray tracing, 1440p, for high-end mobile/lightweight devices</li>
                     </ul>
                 </div>
             </li>

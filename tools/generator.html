@@ -641,12 +641,12 @@
                 <select class="autoField game-test" id="gameTest_0">
                   <option>—</option>
                   <option>3DMark Steel Nomad</option>
-                  <option>3DMark Steel Nomad Light</option>
-                  <option>3DMark Solar Bay Extreme</option>
-                  <option>3DMark Solar Bay</option>
                   <option>3DMark Time Spy</option>
                   <option>3DMark Fire Strike</option>
                   <option>3DMark Night Raid</option>
+                  <option>3DMark Steel Nomad Light</option>
+                  <option>3DMark Solar Bay Extreme</option>
+                  <option>3DMark Solar Bay</option>
                 </select>
               </div>
               <div><label>Score</label><input class="autoField game-score" id="gameScore_0" type="number" placeholder="e.g. 3900"></div>
@@ -760,6 +760,16 @@
       dcc: { name: 'Digital Content Creation', desc: 'Photo editing, video editing, rendering', scoreId: 'dccScore' },
     };
 
+    const GAME_DESC = {
+      '3DMark Steel Nomad': '4K gaming performance test',
+      '3DMark Time Spy': '1440p DirectX 12 gaming with CPU test',
+      '3DMark Fire Strike': '1080p DirectX 11 gaming performance',
+      '3DMark Night Raid': 'Integrated graphics performance test',
+      '3DMark Steel Nomad Light': 'Lightweight device gaming test',
+      '3DMark Solar Bay Extreme': 'Ray tracing stress test for integrated graphics',
+      '3DMark Solar Bay': 'Ray tracing performance test',
+    };
+
     let overrides = { ess: null, prod: null, dcc: null };
 
     function el(id) { return document.getElementById(id); }
@@ -844,13 +854,14 @@
       let gamingHtml = '';
       gamingEntries.forEach(entry => {
         const { gScore, gTest, gFps, gComment } = entry;
+        const desc = GAME_DESC[gTest] || 'Real-time graphics &amp; game performance';
         gamingHtml += `
     <div class="res-row">
       <div class="res-top">
         <div class="res-name">Gaming <span class="res-sub">(${gTest})</span></div>
         <div class="res-score">${gFps !== null ? gFps + ' FPS' : (gScore !== null ? gScore.toLocaleString() : '—')}</div>
       </div>
-      <div class="res-desc">Real-time graphics &amp; game performance${gScore !== null && gFps !== null ? ' · Score: ' + gScore.toLocaleString() : ''}${gComment ? ' · ' + gComment : ''}</div>
+      <div class="res-desc">${desc}${gScore !== null && gFps !== null ? ' · Score: ' + gScore.toLocaleString() : ''}${gComment ? ' · ' + gComment : ''}</div>
     </div>`;
       });
       el('outGaming').innerHTML = gamingHtml;
@@ -891,12 +902,12 @@
             <select class="autoField game-test" id="gameTest_${index}">
               <option>—</option>
               <option>3DMark Steel Nomad</option>
-              <option>3DMark Steel Nomad Light</option>
-              <option>3DMark Solar Bay Extreme</option>
-              <option>3DMark Solar Bay</option>
               <option>3DMark Time Spy</option>
               <option>3DMark Fire Strike</option>
               <option>3DMark Night Raid</option>
+              <option>3DMark Steel Nomad Light</option>
+              <option>3DMark Solar Bay Extreme</option>
+              <option>3DMark Solar Bay</option>
             </select>
           </div>
           <div><label>Score</label><input class="autoField game-score" id="gameScore_${index}" type="number" placeholder="e.g. 3900"></div>
